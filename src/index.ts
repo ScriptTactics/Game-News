@@ -1,5 +1,6 @@
 import { Client, MessageEmbed, TextChannel } from 'discord.js';
 import * as env from 'dotenv';
+import axios, { Axios } from 'axios';
 import cron from 'node-cron';
 import needle from 'needle';
 import { News } from './models/steam-news/steam-news-response/steamNewsModelResponse';
@@ -8,12 +9,14 @@ env.config();
 
 export const GAMEID = "657990";
 export const MAXLENGTH = 5000;
-export const chID = "";
+export const chID = "870509503475486740";
 const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${GAMEID}&count=1&maxlength=${MAXLENGTH}&format=json`
 let initEmbed = new MessageEmbed();
+let currentDate = new Date();
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    let time = currentDate.getHours() + ":" + currentDate.getMinutes();
+    console.log(`Logged in as ${client.user.tag}! Current time: ${time}`);
 });
 
 client.once("shardReconnecting", id => {
@@ -23,41 +26,101 @@ client.once("shardReconnecting", id => {
 client.once("shardDisconnect", (event, shardID) => {
     console.log(`Disconnected from event ${event} with ID ${shardID}`);
 });
+client.on('message', async (message) => {
+    if (!message.author.bot) {
+        const channel = await client.channels.fetch(chID) as TextChannel;
+        let time = currentDate.getHours() + ":" + currentDate.getMinutes();
+        console.log(`Making request at: ${time}`);
+        const req = await axios.get(url);
 
-cron.schedule('*/10 * * * *', async () => {
-    const stream = needle.get(url, {
-        timeout: 20000
-    });
+        if (req.status === 200) {
+            const data = req.data as News;
+            console.log(data);
+            postNewsToChannel(data, channel);
+        } else {
+            console.log(req.status);
+        }
+    }
 
-    stream.on('data', (data: string) => {
+});
+
+/* cron.schedule('* * * * *', async () => {
+    const channel = await client.channels.fetch(chID) as TextChannel;
+    let time = currentDate.getHours() + ":" + currentDate.getMinutes();
+    console.log(`Making request at: ${time}`);
+    const req = await axios.get(url);
+    const stream = needle.get(url);
+
+    if (req.status === 200) {
+        const data = req.data as News;
+        console.log(data);
+        postNewsToChannel(data, channel);
+    } else {
+        console.log(req.status);
+    }
+
+    stream.on('data', (data: News) => {
         console.log(data);
         try {
-            const json = JSON.parse(data);
-            console.log(json);
-            postNewsToChannel(json);
+            postNewsToChannel(data, channel);
         } catch (error) {
             console.log(error);
             stream.emit('timeout');
         }
     })
 
-});
+}); */
 
 
-async function postNewsToChannel(response: News) {
-    const channel = await client.channels.fetch(chID) as TextChannel;
+function postNewsToChannel(response: News, channel: TextChannel) {
+    console.log(`Posting to channel`);
+
     if (response) {
         const embed = new MessageEmbed();
         embed.setColor('#708090');
-        embed.setTitle(response.appnews.newsitems[0].title);
+        embed.setTitle('Crafting Dead -' + response.appnews.newsitems[0].title + ' - Steam News');
         embed.setURL(response.appnews.newsitems[0].url);
-        embed.setDescription(response.appnews.newsitems[0].contents);
-        embed.setFooter(response.appnews.newsitems[0].author);
+        embed.setThumbnail('https://cdn.akamai.steamstatic.com/steam/apps/657990/header.jpg?t=1636584022');
+        embed.setImage('https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/29660251/74fa96762972546e004cba4409906c4eb9e4b7e8.png')
+        const change = response.appnews.newsitems[0].contents.split('- ');
+        let added = [];
+        let updated = [];
+        let bugs = [];
 
-        if (initEmbed?.title !== embed?.title) {
-            channel.send(embed);
-        } else {
+        const addedReg = '(Added.*)';
+        const updatedReg = '(Updated.*)';
+        const bugsReg = '(Fixed.*)';
+
+
+        change.forEach(line => {
+            if (line.match(addedReg)) {
+                added.push(line);
+            }
+            if (line.match(updatedReg)) {
+                updated.push(line);
+            }
+            if (line.match(bugsReg)) {
+                bugs.push(line);
+            }
+        });
+
+        embed.addField('Added Items', added);
+        embed.addField('Updated', updated);
+        embed.addField('Bug Fixes', bugs);
+        embed.setDescription(change[0]);
+        embed.setFooter(response.appnews.newsitems[0].author);
+        const dateObj = new Date(response.appnews.newsitems[0].date * 1000);
+        embed.setTimestamp(dateObj);
+
+        if (initEmbed.title === null) {
             initEmbed = embed;
+            channel.send(embed);
+            return;
+        }
+
+        if (initEmbed.title !== embed.title) {
+            initEmbed = embed;
+            channel.send(embed);
         }
     }
 

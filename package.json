@@ -4,7 +4,8 @@
   "description": "Discord bot that subscribes to game news",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "prestart": "rm -rf dist/",
+    "start": "tsc && node dist/index.js",
     "watch": "tsc -p tsconfig.json -w",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
   },
@@ -12,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
+    "axios": "^0.24.0",
     "commonjs": "0.0.1",
     "discord.js": "^12.5.3",
     "dotenv": "^8.6.0",

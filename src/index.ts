@@ -54,7 +54,7 @@ async function postNewsToChannel(response: News) {
         embed.setDescription(response.appnews.newsitems[0].contents);
         embed.setFooter(response.appnews.newsitems[0].author);
 
-        if (initEmbed.title !== embed.title) {
+        if (initEmbed?.title !== embed?.title) {
             channel.send(embed);
         } else {
             initEmbed = embed;

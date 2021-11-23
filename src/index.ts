@@ -1,9 +1,11 @@
-import { Client, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Collection, MessageEmbed, TextChannel } from 'discord.js';
 import * as env from 'dotenv';
 import axios, { Axios } from 'axios';
 import cron from 'node-cron';
 import needle from 'needle';
 import { News } from './models/steam-news/steam-news-response/steamNewsModelResponse';
+import { readdir } from 'fs';
+import { Command } from './models/Command';
 const client = new Client();
 env.config();
 
@@ -13,6 +15,8 @@ export const chID = "870509503475486740";
 const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${GAMEID}&count=1&maxlength=${MAXLENGTH}&format=json`
 let initEmbed = new MessageEmbed();
 let currentDate = new Date();
+const prefix = '!';
+
 
 client.on('ready', () => {
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
@@ -26,30 +30,54 @@ client.once("shardReconnecting", id => {
 client.once("shardDisconnect", (event, shardID) => {
     console.log(`Disconnected from event ${event} with ID ${shardID}`);
 });
-client.on('message', async (message) => {
-    if (!message.author.bot) {
-        const channel = await client.channels.fetch(chID) as TextChannel;
-        let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-        console.log(`Making request at: ${time}`);
-        const req = await axios.get(url);
 
-        if (req.status === 200) {
-            const data = req.data as News;
-            console.log(data);
-            postNewsToChannel(data, channel);
-        } else {
-            console.log(req.status);
-        }
+const commands = new Collection();
+readdir('dist/commands', (err, allFiles) => {
+    if (err) {
+        console.error(`Unable to load commands: ${err}`);
+    }
+    let files = allFiles.filter(f => f.split('.').pop() === ('js'));
+    if (files.length <= 0) {
+        console.log(`No commands found!`);
+        return;
+    }
+    for (const file of files) {
+        const command = require(`./commands/${file}`) as {
+            name: string, command: Command
+        };
+        commands.set(command.name, command);
     }
 
 });
 
-/* cron.schedule('* * * * *', async () => {
+
+client.on('message', async (message) => {
+    if (message.author.bot || !message.content.startsWith(prefix)) {
+        return;
+    }
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    if (args.length < 1) {
+        return;
+    }
+    const command = args.shift()!.toLowerCase();
+    const commandFile = commands.get(command) as Command;
+    if (!commandFile) {
+        return;
+    }
+    if (commands.size < 1) {
+        return;
+    }
+
+    commandFile.execute({
+        msg: message
+    });
+});
+
+cron.schedule('* * * * *', async () => {
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     console.log(`Making request at: ${time}`);
-    const req = await axios.get(url);
-    const stream = needle.get(url);
+     const req = await axios.get(url);
 
     if (req.status === 200) {
         const data = req.data as News;
@@ -59,17 +87,7 @@ client.on('message', async (message) => {
         console.log(req.status);
     }
 
-    stream.on('data', (data: News) => {
-        console.log(data);
-        try {
-            postNewsToChannel(data, channel);
-        } catch (error) {
-            console.log(error);
-            stream.emit('timeout');
-        }
-    })
-
-}); */
+ });
 
 
 function postNewsToChannel(response: News, channel: TextChannel) {

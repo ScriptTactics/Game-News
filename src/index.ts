@@ -74,8 +74,8 @@ client.on('message', async (message) => {
         msg: message
     });
 });
-/* 
-cron.schedule('* * * * *', async () => {
+
+cron.schedule('*/30 * * * *', async () => {
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     console.log(`Making request at: ${time}`);
@@ -90,7 +90,7 @@ cron.schedule('* * * * *', async () => {
     }
 
  });
- */
+
 
 function postNewsToChannel(response: News, channel: TextChannel) {
     console.log(`Posting to channel`);
@@ -101,7 +101,6 @@ function postNewsToChannel(response: News, channel: TextChannel) {
         embed.setTitle('Crafting Dead -' + response.appnews.newsitems[0].title + ' - Steam News');
         embed.setURL(response.appnews.newsitems[0].url);
         embed.setThumbnail('https://cdn.akamai.steamstatic.com/steam/apps/657990/header.jpg?t=1636584022');
-      //  embed.setImage('https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/29660251/74fa96762972546e004cba4409906c4eb9e4b7e8.png')
         const change = response.appnews.newsitems[0].contents.split('- ');
         let added = [];
         let updated = [];

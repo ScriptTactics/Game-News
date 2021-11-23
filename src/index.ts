@@ -16,7 +16,7 @@ const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=
 let initEmbed = new MessageEmbed();
 let currentDate = new Date();
 const prefix = '!';
-
+export const subscriptionList = 'subscriptionList.txt';
 
 client.on('ready', () => {
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
@@ -61,6 +61,8 @@ client.on('message', async (message) => {
     }
     const command = args.shift()!.toLowerCase();
     const commandFile = commands.get(command) as Command;
+    console.log(command);
+    console.log(commandFile);
     if (!commandFile) {
         return;
     }
@@ -72,7 +74,7 @@ client.on('message', async (message) => {
         msg: message
     });
 });
-
+/* 
 cron.schedule('* * * * *', async () => {
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
@@ -88,7 +90,7 @@ cron.schedule('* * * * *', async () => {
     }
 
  });
-
+ */
 
 function postNewsToChannel(response: News, channel: TextChannel) {
     console.log(`Posting to channel`);

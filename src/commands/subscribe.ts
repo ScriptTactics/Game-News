@@ -9,7 +9,7 @@ export = {
     usage: `<GameName>:required`,
     async execute(commandArgs: CommandArgs) {
 
-        const gameName = commandArgs.msg.content.split(' ')[1].toLocaleLowerCase();
+        const gameName = commandArgs.args.toString().replace(/,/g, ' ').toLowerCase();
 
         const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
         if (!app) {

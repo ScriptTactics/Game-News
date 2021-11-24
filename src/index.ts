@@ -14,23 +14,23 @@ env.config();
 export const MAXLENGTH = 5000;
 export const chID = "870509503475486740";
 
-let embedList: { [gameId: string]: MessageEmbed } = {};
+let messageList: { [gameId: string]: string } = {};
 let initEmbed = new MessageEmbed();
 let currentDate = new Date();
-const prefix = '!';
+export const prefix = '!';
 export const subscriptionList = 'subscriptionList.txt';
 let steamAppList: SteamApps;
 
 client.on('ready', async () => {
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-    const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
+/*     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
 
     if (appList.status === 200) {
         console.log(`Retrieved SteamApp response`);
         steamAppList = appList.data as SteamApps;
     } else {
         console.error(`${appList.status}: Unable to retrieve response \n ${appList.data}`);
-    }
+    } */
     console.log(`Logged in as ${client.user.tag}! Current time: ${time}`);
 });
 
@@ -64,7 +64,7 @@ readdir('dist/commands', (err, allFiles) => {
 
 client.on('message', async (message) => {
 
-    if (!message.author.bot) {
+ /*    if (!message.author.bot) {
         const channel = await client.channels.fetch(chID) as TextChannel;
         let time = currentDate.getHours() + ":" + currentDate.getMinutes();
         console.log(`Making request at: ${time}`);
@@ -78,13 +78,13 @@ client.on('message', async (message) => {
             if (req.status === 200) {
                 const data = req.data as News;
                 console.log(data);
-                embedGameNews(data, channel);
+                sendGameNews(data, channel);
             } else {
                 console.log(req.status);
             }
 
         }
-    }
+    } */
 
     if (message.author.bot || !message.content.startsWith(prefix)) {
         return;
@@ -95,8 +95,6 @@ client.on('message', async (message) => {
     }
     const command = args.shift()!.toLowerCase();
     const commandFile = commands.get(command) as Command;
-    console.log(command);
-    console.log(commandFile);
     if (!commandFile) {
         return;
     }
@@ -105,8 +103,11 @@ client.on('message', async (message) => {
     }
 
     commandFile.execute({
-        msg: message
+        msg: message,
+        args: args,
+        commands: commands
     });
+    
 });
 
 /* cron.schedule('*30 * * * *', async () => {
@@ -131,37 +132,22 @@ client.on('message', async (message) => {
  }); */
 
 
-function embedGameNews(response: News, channel: TextChannel) {
+function sendGameNews(response: News, channel: TextChannel) {
     if (!response) {
         return;
     }
-    const embed = new MessageEmbed();
-    embed.setColor('#FF0000');
-    let gameTitle = '';
-    for (const app of steamAppList.applist.apps) {
-        if (app.appid === response.appnews.appid) {
-            gameTitle = app.name;
-            break;
-        }
-    }
-    embed.setTitle(`${gameTitle} - ${response.appnews.newsitems[0].title} - Steam News`);
-    embed.setURL(response.appnews.newsitems[0].url);
-    embed.setFooter(response.appnews.newsitems[0].author);
-    const dateObj = new Date(response.appnews.newsitems[0].date * 1000);
-    embed.setTimestamp(dateObj);
-    embed.setDescription(`https://steamcommunity.com/games/221100/announcements/detail/3117049349012745522`);
-    console.log(embedList[response.appnews.appid]);
-    if ((embedList[response.appnews.appid] === undefined)) {
-        embedList[response.appnews.appid] = embed;
-        channel.send(embed);
+    const message = response.appnews.newsitems[0].url;
+
+    if ((messageList[response.appnews.appid] === null)) {
+        messageList[response.appnews.appid] = message;
+        channel.send(response.appnews.newsitems[0].url);
         return;
     }
 
-    if (embedList[response.appnews.appid].title !== embed.title) {
-        embedList[response.appnews.appid] = embed;
-        channel.send(embed);
+    if (messageList[response.appnews.appid] !== message) {
+        messageList[response.appnews.appid] = message;
+        channel.send(message);
     }
-    channel.send(response.appnews.newsitems[0].url);
 }
 
 /* function embedCDNews(response: News, channel: TextChannel) {

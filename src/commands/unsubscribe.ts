@@ -5,6 +5,8 @@ import { subscriptionList } from "..";
 export = {
     name: 'unsubscribe',
     description: 'Un-Subscribe to Game News',
+    args: true,
+    usage: `<gameID: numeric>:required`,
     execute(commandArgs: CommandArgs) {
 
         const gameID = commandArgs.msg.content.split(' ')[1];
@@ -34,7 +36,6 @@ export = {
 
             rl.on('end', () => {
                 if (found !== '') {
-
                     fileData.forEach(x => {
                         fs.writeFile(subscriptionList, x, null, (err) => {
                             if (err) {

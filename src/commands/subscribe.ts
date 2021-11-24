@@ -5,6 +5,8 @@ import { subscriptionList } from "..";
 export = {
     name: 'subscribe',
     description: 'Subscribe to Game News',
+    args: true,
+    usage: `<gameID:numeric>:required`,
     async execute(commandArgs: CommandArgs) {
 
         const gameID = commandArgs.msg.content.split(' ')[1];

@@ -8,9 +8,8 @@ import { Command } from './models/Command';
 import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 env.config();
-
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 export const MAXLENGTH = 5000;
 export const chID = "870509503475486740";
 
@@ -20,7 +19,7 @@ export const prefix = '!';
 export const subscriptionList = 'subscriptionList.txt';
 let steamAppList: SteamApps;
 
-client.on('ready', async () => {
+client.once('ready', async () => {
     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
 
     if (appList.status === 200) {
@@ -55,10 +54,9 @@ readdir('dist/commands', (err, allFiles) => {
         };
         commands.set(command.name, command);
     }
-
 });
 
-client.on('message', async (message) => {
+client.on('messageCreate', message => {
     if (message.author.bot || !message.content.startsWith(prefix)) {
         return;
     }
@@ -84,7 +82,7 @@ client.on('message', async (message) => {
 
 });
 
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();

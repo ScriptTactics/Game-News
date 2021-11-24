@@ -6,23 +6,22 @@ export = {
     name: 'subscribe',
     description: 'Subscribe to Game News',
     args: true,
-    usage: `<gameID:numeric>:required`,
+    usage: `<GameName>:required`,
     async execute(commandArgs: CommandArgs) {
 
-        const gameID = commandArgs.msg.content.split(' ')[1];
+        const gameName = commandArgs.msg.content.split(' ')[1].toLocaleLowerCase();
 
-        if(gameID.match('[^0-9.]')){
-            return commandArgs.msg.channel.send('Game ID can only be digits');
-        }
+        const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+
         try {
             const rl = fs.createReadStream(subscriptionList, {
                 flags: 'a+',
                 encoding: 'utf8'
             });
             let duplicate = false;
-            rl.on('error', (err) => { throw err; });
+            rl.on('error', (err) => { console.error(err); });
             rl.on('data', (data) => {
-                const found = data.toString().split('\n').find(value => { return value === gameID });
+                const found = data.toString().split('\n').find(value => { return value === app.appid.toString() });
                 if (found) {
                     duplicate = true;
                     return commandArgs.msg.channel.send('You are already subscribed to that');
@@ -34,8 +33,8 @@ export = {
             rl.on('end', () => {
                 if (!duplicate) {
                     const file = fs.createWriteStream(subscriptionList, { flags: 'a+' });
-                    file.on('error', (err) => { throw err; });
-                    file.write(gameID + '\n');
+                    file.on('error', (err) => { console.error(err); });
+                    file.write(app.appid.toString() + '\n');
                     file.end();
                     commandArgs.msg.channel.send('Succesfully Subscribed');
                 }

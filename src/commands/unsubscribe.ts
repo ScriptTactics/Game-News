@@ -6,14 +6,13 @@ export = {
     name: 'unsubscribe',
     description: 'Un-Subscribe to Game News',
     args: true,
-    usage: `<gameID: numeric>:required`,
+    usage: `<GameName>:required`,
     execute(commandArgs: CommandArgs) {
 
-        const gameID = commandArgs.msg.content.split(' ')[1];
+        const gameName = commandArgs.msg.content.split(' ')[1].toLocaleLowerCase();
 
-        if (gameID.match('[^0-9.]')) {
-            return commandArgs.msg.channel.send('Game ID can only be digits');
-        }
+        const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+
         try {
             const rl = fs.createReadStream(subscriptionList, {
                 flags: 'a+',
@@ -24,9 +23,9 @@ export = {
             let fileData: string[] = [];
 
             rl.on('data', (data) => {
-                found = data.toString().split('\n').find(x => { return x === gameID });
+                found = data.toString().split('\n').find(x => { return x === app.appid.toString() });
                 data.toString().split('\n').forEach(id => {
-                    if (gameID !== id) {
+                    if (app.appid.toString() !== id) {
                         fileData.push(id);
 
                     }
@@ -45,7 +44,7 @@ export = {
                     });
                     commandArgs.msg.channel.send('Succesfully Unsubscribed');
                 } else {
-                    return commandArgs.msg.channel.send(`You are not subscribed to ${gameID}`);
+                    return commandArgs.msg.channel.send(`You are not subscribed to ${gameName}`);
                 }
             });
         } catch (error) {

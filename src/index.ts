@@ -1,4 +1,4 @@
-import { Client, Collection, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Collection, Intents, MessageEmbed, TextChannel } from 'discord.js';
 import * as env from 'dotenv';
 import axios from 'axios';
 import cron from 'node-cron';
@@ -7,8 +7,9 @@ import { readdir } from 'fs';
 import { Command } from './models/Command';
 import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
+import { isBuffer } from 'util';
 
-const client = new Client();
+const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 env.config();
 
 export const MAXLENGTH = 5000;
@@ -23,14 +24,14 @@ let steamAppList: SteamApps;
 
 client.on('ready', async () => {
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-/*     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
+    const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
 
     if (appList.status === 200) {
         console.log(`Retrieved SteamApp response`);
         steamAppList = appList.data as SteamApps;
     } else {
         console.error(`${appList.status}: Unable to retrieve response \n ${appList.data}`);
-    } */
+    }
     console.log(`Logged in as ${client.user.tag}! Current time: ${time}`);
 });
 
@@ -64,27 +65,27 @@ readdir('dist/commands', (err, allFiles) => {
 
 client.on('message', async (message) => {
 
- /*    if (!message.author.bot) {
-        const channel = await client.channels.fetch(chID) as TextChannel;
-        let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-        console.log(`Making request at: ${time}`);
-        const file = fs.readFileSync(subscriptionList, 'utf8');
-        const lines = file.split(/\r?\n/);
-        for (const line of lines) {
-            console.log(line);
-            const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${line}&count=1&maxlength=${MAXLENGTH}&format=json`
-            const req = await axios.get(url);
+    /*    if (!message.author.bot) {
+           const channel = await client.channels.fetch(chID) as TextChannel;
+           let time = currentDate.getHours() + ":" + currentDate.getMinutes();
+           console.log(`Making request at: ${time}`);
+           const file = fs.readFileSync(subscriptionList, 'utf8');
+           const lines = file.split(/\r?\n/);
+           for (const line of lines) {
+               console.log(line);
+               const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${line}&count=1&maxlength=${MAXLENGTH}&format=json`
+               const req = await axios.get(url);
 
-            if (req.status === 200) {
-                const data = req.data as News;
-                console.log(data);
-                sendGameNews(data, channel);
-            } else {
-                console.log(req.status);
-            }
+               if (req.status === 200) {
+                   const data = req.data as News;
+                   console.log(data);
+                   sendGameNews(data, channel);
+               } else {
+                   console.log(req.status);
+               }
 
-        }
-    } */
+           }
+       } */
 
     if (message.author.bot || !message.content.startsWith(prefix)) {
         return;
@@ -105,31 +106,38 @@ client.on('message', async (message) => {
     commandFile.execute({
         msg: message,
         args: args,
-        commands: commands
+        commands: commands,
+        appList: steamAppList
     });
-    
+
 });
 
-/* cron.schedule('*30 * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     console.log(`Making request at: ${time}`);
-    const file = fs.readFileSync(subscriptionList);
-    for (const line in file) {
+
+    const rl = fs.createReadStream(subscriptionList, {
+        flags: 'a+',
+        encoding: 'utf8'
+    });
+    rl.on('error', (err) => { console.error(err); });
+    rl.on('data', async (line) => {
         const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${line}&count=1&maxlength=${MAXLENGTH}&format=json`
         const req = await axios.get(url);
 
-    if (req.status === 200) {
-        const data = req.data as News;
-        console.log(data);
-        embedGameNews(data, channel);
-    } else {
-        console.log(req.status);
-    }
+        if (req.status === 200) {
+            const data = req.data as News;
+            console.log(data);
+            sendGameNews(data, channel);
+        } else {
+            console.log(req.status);
+        }
 
-    }
- }); */
+    });
+
+});
 
 
 function sendGameNews(response: News, channel: TextChannel) {
@@ -149,61 +157,6 @@ function sendGameNews(response: News, channel: TextChannel) {
         channel.send(message);
     }
 }
-
-/* function embedCDNews(response: News, channel: TextChannel) {
-    console.log(`Posting to channel`);
-
-    if (response) {
-        const embed = new MessageEmbed();
-        embed.setColor('#708090');
-        embed.setTitle('Crafting Dead -' + response.appnews.newsitems[0].title + ' - Steam News');
-        embed.setURL(response.appnews.newsitems[0].url);
-        embed.setThumbnail('https://cdn.akamai.steamstatic.com/steam/apps/657990/header.jpg?t=1636584022');
-        const change = response.appnews.newsitems[0].contents.split('- ');
-        let added = [];
-        let updated = [];
-        let bugs = [];
-
-        const addedReg = '(Added.*)';
-        const updatedReg = '(Updated.*)';
-        const bugsReg = '(Fixed.*)';
-
-
-        change.forEach(line => {
-            if (line.match(addedReg)) {
-                added.push("- " + line);
-            }
-            if (line.match(updatedReg)) {
-                updated.push("- " + line);
-            }
-            if (line.match(bugsReg)) {
-                bugs.push("- " + line);
-            }
-        });
-
-        embed.addField('Added Items', added);
-        embed.addField('Updated', updated);
-        embed.addField('Bug Fixes', bugs);
-        embed.setDescription(change[0]);
-        embed.setFooter(response.appnews.newsitems[0].author);
-        const dateObj = new Date(response.appnews.newsitems[0].date * 1000);
-        embed.setTimestamp(dateObj);
-
-        if (initEmbed.title === null) {
-            initEmbed = embed;
-            channel.send(embed);
-            return;
-        }
-
-        if (initEmbed.title !== embed.title) {
-            initEmbed = embed;
-            channel.send(embed);
-        }
-    }
-
-}
- */
-
 
 
 client.login(process.env.DISCORD_TOKEN);

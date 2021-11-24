@@ -13,20 +13,40 @@ export = {
             return commandArgs.msg.channel.send('Game ID can only be digits');
         }
         try {
-            let file = fs.readFileSync(subscriptionList, 'utf8');
-            let data: string[] = [];
-            for (const line of file) {
-                console.log(line);
-                if (!line.match(gameID)) {
-                    data.push(line);
+            const rl = fs.createReadStream(subscriptionList, {
+                flags: 'a+',
+                encoding: 'utf8'
+            });
+            let found = '';
+            rl.on('error', (err) => { throw err; });
+            let fileData: string[] = [];
+
+            rl.on('data', (data) => {
+                found = data.toString().split('\n').find(x => { return x === gameID });
+                data.toString().split('\n').forEach(id => {
+                    if (gameID !== id) {
+                        fileData.push(id);
+
+                    }
+                });
+            });
+
+
+            rl.on('end', () => {
+                if (found !== '') {
+
+                    fileData.forEach(x => {
+                        fs.writeFile(subscriptionList, x, null, (err) => {
+                            if (err) {
+                                console.error(err);
+                            }
+                        });
+                    });
+                    commandArgs.msg.channel.send('Succesfully Unsubscribed');
+                } else {
+                    return commandArgs.msg.channel.send(`You are not subscribed to ${gameID}`);
                 }
-            }
-
-            for (const l in data) {
-                fs.writeFileSync(subscriptionList, l + '\n');
-            }
-            commandArgs.msg.channel.send('Succesfully Un-Subscribed');
-
+            });
         } catch (error) {
             return error;
         }

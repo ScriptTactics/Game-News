@@ -82,7 +82,7 @@ client.on('messageCreate', message => {
 
 });
 
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('0 */1 * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();

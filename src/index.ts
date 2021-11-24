@@ -11,7 +11,7 @@ import * as fs from 'fs';
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 export const MAXLENGTH = 5000;
-export const chID = "870509503475486740";
+export const chID = "913147152635658280";
 
 let messageList: { [gameId: string]: string } = {};
 let currentDate = new Date();
@@ -82,7 +82,7 @@ client.on('messageCreate', message => {
 
 });
 
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();

@@ -46,7 +46,7 @@ export = {
                             }
                         });
                     });
-                    commandArgs.msg.channel.send('Succesfully Unsubscribed');
+                    commandArgs.msg.channel.send('Successfully Unsubscribed');
                 } else {
                     return commandArgs.msg.channel.send(`You are not subscribed to ${gameName}`);
                 }

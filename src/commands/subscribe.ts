@@ -39,7 +39,7 @@ export = {
                     file.on('error', (err) => { console.error(err); });
                     file.write(app.appid.toString() + '\n');
                     file.end();
-                    commandArgs.msg.channel.send('Succesfully Subscribed');
+                    commandArgs.msg.channel.send('Successfully Subscribed');
                 }
             });
 

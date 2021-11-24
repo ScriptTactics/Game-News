@@ -20,14 +20,14 @@ export = {
             if (command.description) data.push(`**Description:** ${command.description}`);
             if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
 
-            commandArgs.msg.channel.send(data, { split: true });
+            commandArgs.msg.channel.send(data.toString());
 
         } else {
             data.push(`Here's a list of all my commands: `);
             data.push(commands.map(command => (command as Command).name).join(', '));
             data.push(`\nYou can send \`${prefix}help <command name>\` to get info on a specific command!`);
 
-            return commandArgs.msg.channel.send(data, { split: true });
+            return commandArgs.msg.channel.send(data.toString());
         }
 
     }

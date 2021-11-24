@@ -12,6 +12,9 @@ export = {
         const gameName = commandArgs.msg.content.split(' ')[1].toLocaleLowerCase();
 
         const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+        if (!app) {
+            return commandArgs.msg.channel.send('Could not find that game');
+        }
 
         try {
             const rl = fs.createReadStream(subscriptionList, {

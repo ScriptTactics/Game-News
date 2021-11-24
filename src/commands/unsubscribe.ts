@@ -13,12 +13,16 @@ export = {
 
         const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
 
+        if (!app) {
+            return commandArgs.msg.channel.send('Could not find that game');
+        }
+
         try {
             const rl = fs.createReadStream(subscriptionList, {
                 flags: 'a+',
                 encoding: 'utf8'
             });
-            let found = '';
+            let found: string | undefined;
             rl.on('error', (err) => { throw err; });
             let fileData: string[] = [];
 

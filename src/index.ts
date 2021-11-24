@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, MessageEmbed, TextChannel } from 'discord.js';
+import { Client, Collection, Intents, TextChannel } from 'discord.js';
 import * as env from 'dotenv';
 import axios from 'axios';
 import cron from 'node-cron';
@@ -7,7 +7,6 @@ import { readdir } from 'fs';
 import { Command } from './models/Command';
 import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
-import { isBuffer } from 'util';
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 env.config();
@@ -16,14 +15,12 @@ export const MAXLENGTH = 5000;
 export const chID = "870509503475486740";
 
 let messageList: { [gameId: string]: string } = {};
-let initEmbed = new MessageEmbed();
 let currentDate = new Date();
 export const prefix = '!';
 export const subscriptionList = 'subscriptionList.txt';
 let steamAppList: SteamApps;
 
 client.on('ready', async () => {
-    let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
 
     if (appList.status === 200) {
@@ -32,7 +29,6 @@ client.on('ready', async () => {
     } else {
         console.error(`${appList.status}: Unable to retrieve response \n ${appList.data}`);
     }
-    console.log(`Logged in as ${client.user.tag}! Current time: ${time}`);
 });
 
 client.once("shardReconnecting", id => {
@@ -62,31 +58,7 @@ readdir('dist/commands', (err, allFiles) => {
 
 });
 
-
 client.on('message', async (message) => {
-
-    /*    if (!message.author.bot) {
-           const channel = await client.channels.fetch(chID) as TextChannel;
-           let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-           console.log(`Making request at: ${time}`);
-           const file = fs.readFileSync(subscriptionList, 'utf8');
-           const lines = file.split(/\r?\n/);
-           for (const line of lines) {
-               console.log(line);
-               const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${line}&count=1&maxlength=${MAXLENGTH}&format=json`
-               const req = await axios.get(url);
-
-               if (req.status === 200) {
-                   const data = req.data as News;
-                   console.log(data);
-                   sendGameNews(data, channel);
-               } else {
-                   console.log(req.status);
-               }
-
-           }
-       } */
-
     if (message.author.bot || !message.content.startsWith(prefix)) {
         return;
     }
@@ -112,7 +84,7 @@ client.on('message', async (message) => {
 
 });
 
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();

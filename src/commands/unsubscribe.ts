@@ -2,7 +2,7 @@ import { Command, CommandArgs } from "../models/Command";
 import * as fs from 'fs';
 import { subscriptionList } from "..";
 
-export = {
+export const unsubscribe:Command = {
     name: 'unsubscribe',
     description: 'Un-Subscribe to Game News',
     args: true,
@@ -56,4 +56,4 @@ export = {
         }
     }
 
-} as Command;
+};

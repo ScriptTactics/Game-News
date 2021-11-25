@@ -2,7 +2,7 @@ import { Command, CommandArgs } from "../models/Command";
 import * as fs from 'fs';
 import { subscriptionList } from "..";
 
-export = {
+export const subscribe:Command = {
     name: 'subscribe',
     description: 'Subscribe to Game News',
     args: true,
@@ -48,4 +48,4 @@ export = {
         }
     }
 
-} as Command;
+};

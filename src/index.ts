@@ -7,11 +7,53 @@ import { readdir } from 'fs';
 import { Command } from './models/Command';
 import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
+import { Routes } from 'discord-api-types/v9';
+import { REST } from '@discordjs/rest';
+import { ImportCommand } from './models/ImportCommand';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 export const MAXLENGTH = 1;
 export const chID = "913147152635658280";
+
+const guildID = '732772163471540335';
+const clientID = '912373417917943939';
+
+const commands = new Collection();
+readdir('dist/commands', async (err, allFiles) => {
+    if (err) {
+        console.error(`Unable to load commands: ${err}`);
+    }
+    let files = allFiles.filter(f => f.split('.').pop() === ('js'));
+    if (files.length <= 0) {
+        console.log(`No commands found!`);
+        return;
+    }
+    for (const file of files) {
+
+        import(`./commands/${file}`).then((importedCommand: ImportCommand) => {
+            commands.set(importedCommand.name, importedCommand);
+            console.log(commands);
+        });
+    }
+});
+
+const r = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
+
+(async () => {
+    try {
+        console.log('Started refreshing application (/) commands.');
+
+        await r.put(
+            Routes.applicationGuildCommands(clientID, guildID),
+            { body: commands },
+        );
+
+        console.log('Successfully reloaded application (/) commands.');
+    } catch (error) {
+        console.error(error);
+    }
+})();
 
 let messageList: { [gameId: string]: string } = {};
 let currentDate = new Date();
@@ -38,25 +80,29 @@ client.once("shardDisconnect", (event, shardID) => {
     console.log(`Disconnected from event ${event} with ID ${shardID}`);
 });
 
-const commands = new Collection();
-readdir('dist/commands', (err, allFiles) => {
-    if (err) {
-        console.error(`Unable to load commands: ${err}`);
-    }
-    let files = allFiles.filter(f => f.split('.').pop() === ('js'));
-    if (files.length <= 0) {
-        console.log(`No commands found!`);
-        return;
-    }
-    for (const file of files) {
-        const command = require(`./commands/${file}`) as {
-            name: string, command: Command
-        };
-        commands.set(command.name, command);
-    }
-});
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+    const { commandName } = interaction;
+    //  const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
 
-client.on('messageCreate', message => {
+    if (commandName === 'ping') {
+        interaction.reply('pong');
+    }
+    // const rawData = pingCommand.toJSON();
+    //console.log(rawData);
+
+    /*
+    const command = commands.get(interaction.commandName);
+
+    if(!command) return;
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+
+    } */
+});
+/* client.on('messageCreate', message => {
     if (message.author.bot || !message.content.startsWith(prefix)) {
         return;
     }
@@ -80,7 +126,7 @@ client.on('messageCreate', message => {
         appList: steamAppList
     });
 
-});
+}); */
 
 cron.schedule('0 */1 * * *', async () => {
 

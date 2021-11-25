@@ -1,7 +1,7 @@
 import { prefix } from "..";
 import { Command, CommandArgs } from "../models/Command";
 
-export = {
+export const help:Command = {
     name: 'help',
     description: 'List the operations of all the commands',
     args: true,
@@ -32,4 +32,4 @@ export = {
 
     }
 
-} as Command;
+};

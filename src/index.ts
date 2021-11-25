@@ -31,10 +31,13 @@ readdir('dist/commands', async (err, allFiles) => {
     }
     for (const file of files) {
 
-        import(`./commands/${file}`).then((importedCommand: ImportCommand) => {
-            commands.set(importedCommand.name, importedCommand);
-            console.log(commands);
-        });
+        const importedCommand = await import(`./commands/${file}`) as ImportCommand;
+        const name = importedCommand.name;
+        console.log(name);
+        const cmd = {...importedCommand};
+
+        commands.set(name, cmd);
+        console.log(commands);
     }
 });
 

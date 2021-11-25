@@ -10,7 +10,7 @@ import * as fs from 'fs';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-export const MAXLENGTH = 5000;
+export const MAXLENGTH = 1;
 export const chID = "913147152635658280";
 
 let messageList: { [gameId: string]: string } = {};
@@ -121,6 +121,8 @@ function sendGameNews(response: News, channel: TextChannel) {
     if (!response) {
         return;
     }
+    if (response.appnews.newsitems[0].feedlabel !== 'Community Announcements') return;
+
     const message = response.appnews.newsitems[0].url;
 
     if ((messageList[response.appnews.appid] === null)) {

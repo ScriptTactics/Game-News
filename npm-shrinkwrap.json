@@ -9,7 +9,7 @@
       "version": "1.0.0",
       "license": "ISC",
       "dependencies": {
-        "@discordjs/builders": "^0.8.2",
+        "@discordjs/builders": "^0.7.0",
         "@discordjs/rest": "^0.1.0-canary.0",
         "axios": "^0.24.0",
         "discord-api-types": "^0.24.0",
@@ -130,9 +130,9 @@
       }
     },
     "node_modules/@discordjs/builders": {
-      "version": "0.8.2",
-      "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.8.2.tgz",
-      "integrity": "sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ==",
+      "version": "0.7.0",
+      "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.7.0.tgz",
+      "integrity": "sha512-0dnRH5ABy6DfyPU+gYeIE16P6+fnc9BSK53r0/jCe0aJiBQIVLcPrA7r/5vBV0MaoQOeuhlRQ2vwoawABDkn5w==",
       "dependencies": {
         "@sindresorhus/is": "^4.2.0",
         "discord-api-types": "^0.24.0",
@@ -141,7 +141,7 @@
         "tslib": "^2.3.1"
       },
       "engines": {
-        "node": ">=16.0.0",
+        "node": ">=14.0.0",
         "npm": ">=7.0.0"
       }
     },
@@ -558,6 +558,22 @@
       },
       "engines": {
         "node": ">=16.6.0",
+        "npm": ">=7.0.0"
+      }
+    },
+    "node_modules/discord.js/node_modules/@discordjs/builders": {
+      "version": "0.8.2",
+      "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.8.2.tgz",
+      "integrity": "sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ==",
+      "dependencies": {
+        "@sindresorhus/is": "^4.2.0",
+        "discord-api-types": "^0.24.0",
+        "ow": "^0.27.0",
+        "ts-mixer": "^6.0.0",
+        "tslib": "^2.3.1"
+      },
+      "engines": {
+        "node": ">=16.0.0",
         "npm": ">=7.0.0"
       }
     },
@@ -1061,6 +1077,15 @@
         "node": ">=0.10.0"
       }
     },
+    "node_modules/is-fullwidth-code-point": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
+      "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
+      "dev": true,
+      "engines": {
+        "node": ">=8"
+      }
+    },
     "node_modules/is-glob": {
       "version": "4.0.3",
       "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
@@ -1455,20 +1480,25 @@
         "url": "https://github.com/chalk/slice-ansi?sponsor=1"
       }
     },
-    "node_modules/slice-ansi/node_modules/is-fullwidth-code-point": {
-      "version": "3.0.0",
-      "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
-      "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
-      "dev": true,
-      "engines": {
-        "node": ">=8"
-      }
-    },
     "node_modules/sprintf-js": {
       "version": "1.0.3",
       "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz",
       "integrity": "sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=",
       "dev": true
+    },
+    "node_modules/string-width": {
+      "version": "4.2.3",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz",
+      "integrity": "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==",
+      "dev": true,
+      "dependencies": {
+        "emoji-regex": "^8.0.0",
+        "is-fullwidth-code-point": "^3.0.0",
+        "strip-ansi": "^6.0.1"
+      },
+      "engines": {
+        "node": ">=8"
+      }
     },
     "node_modules/strip-ansi": {
       "version": "6.0.1",
@@ -1538,34 +1568,11 @@
         "url": "https://github.com/sponsors/epoberezkin"
       }
     },
-    "node_modules/table/node_modules/is-fullwidth-code-point": {
-      "version": "3.0.0",
-      "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
-      "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
-      "dev": true,
-      "engines": {
-        "node": ">=8"
-      }
-    },
     "node_modules/table/node_modules/json-schema-traverse": {
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
       "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==",
       "dev": true
-    },
-    "node_modules/table/node_modules/string-width": {
-      "version": "4.2.3",
-      "resolved": "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz",
-      "integrity": "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==",
-      "dev": true,
-      "dependencies": {
-        "emoji-regex": "^8.0.0",
-        "is-fullwidth-code-point": "^3.0.0",
-        "strip-ansi": "^6.0.1"
-      },
-      "engines": {
-        "node": ">=8"
-      }
     },
     "node_modules/text-table": {
       "version": "0.2.0",
@@ -1804,9 +1811,9 @@
       }
     },
     "@discordjs/builders": {
-      "version": "0.8.2",
-      "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.8.2.tgz",
-      "integrity": "sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ==",
+      "version": "0.7.0",
+      "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.7.0.tgz",
+      "integrity": "sha512-0dnRH5ABy6DfyPU+gYeIE16P6+fnc9BSK53r0/jCe0aJiBQIVLcPrA7r/5vBV0MaoQOeuhlRQ2vwoawABDkn5w==",
       "requires": {
         "@sindresorhus/is": "^4.2.0",
         "discord-api-types": "^0.24.0",
@@ -2135,6 +2142,18 @@
         "ws": "^8.2.3"
       },
       "dependencies": {
+        "@discordjs/builders": {
+          "version": "0.8.2",
+          "resolved": "https://registry.npmjs.org/@discordjs/builders/-/builders-0.8.2.tgz",
+          "integrity": "sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ==",
+          "requires": {
+            "@sindresorhus/is": "^4.2.0",
+            "discord-api-types": "^0.24.0",
+            "ow": "^0.27.0",
+            "ts-mixer": "^6.0.0",
+            "tslib": "^2.3.1"
+          }
+        },
         "@discordjs/collection": {
           "version": "0.3.2",
           "resolved": "https://registry.npmjs.org/@discordjs/collection/-/collection-0.3.2.tgz",
@@ -2501,6 +2520,12 @@
       "integrity": "sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=",
       "dev": true
     },
+    "is-fullwidth-code-point": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
+      "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
+      "dev": true
+    },
     "is-glob": {
       "version": "4.0.3",
       "resolved": "https://registry.npmjs.org/is-glob/-/is-glob-4.0.3.tgz",
@@ -2790,14 +2815,6 @@
         "ansi-styles": "^4.0.0",
         "astral-regex": "^2.0.0",
         "is-fullwidth-code-point": "^3.0.0"
-      },
-      "dependencies": {
-        "is-fullwidth-code-point": {
-          "version": "3.0.0",
-          "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
-          "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
-          "dev": true
-        }
       }
     },
     "sprintf-js": {
@@ -2805,6 +2822,17 @@
       "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz",
       "integrity": "sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=",
       "dev": true
+    },
+    "string-width": {
+      "version": "4.2.3",
+      "resolved": "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz",
+      "integrity": "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==",
+      "dev": true,
+      "requires": {
+        "emoji-regex": "^8.0.0",
+        "is-fullwidth-code-point": "^3.0.0",
+        "strip-ansi": "^6.0.1"
+      }
     },
     "strip-ansi": {
       "version": "6.0.1",
@@ -2855,28 +2883,11 @@
             "uri-js": "^4.2.2"
           }
         },
-        "is-fullwidth-code-point": {
-          "version": "3.0.0",
-          "resolved": "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz",
-          "integrity": "sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==",
-          "dev": true
-        },
         "json-schema-traverse": {
           "version": "1.0.0",
           "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
           "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==",
           "dev": true
-        },
-        "string-width": {
-          "version": "4.2.3",
-          "resolved": "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz",
-          "integrity": "sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==",
-          "dev": true,
-          "requires": {
-            "emoji-regex": "^8.0.0",
-            "is-fullwidth-code-point": "^3.0.0",
-            "strip-ansi": "^6.0.1"
-          }
         }
       }
     },

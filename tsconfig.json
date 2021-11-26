@@ -5,15 +5,25 @@
         "importHelpers": true,
         "emitDecoratorMetadata": true,
         "moduleResolution": "Node",
-        "target": "ES5",
-        "lib": ["ES2015", "DOM"],
+        "module": "commonjs",
+        "target": "ESNext",
+        "lib": [
+            "ES2019",
+            "DOM"
+        ],
         "outDir": "dist",
-        "typeRoots": ["node_modules/@types"],
+        "typeRoots": [
+            "node_modules/@types"
+        ],
         "rootDir": "src",
         "strict": false,
-        "types": ["node"],
+        "types": [
+            "node"
+        ],
         "esModuleInterop": true,
         "resolveJsonModule": true,
     },
-    "exclude": ["node_modules"]
+    "exclude": [
+        "node_modules"
+    ]
 }

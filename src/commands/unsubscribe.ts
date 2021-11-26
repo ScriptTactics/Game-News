@@ -1,20 +1,23 @@
-import { Command, CommandArgs } from "../models/Command";
 import * as fs from 'fs';
-import { subscriptionList } from "..";
+import { steamAppList, subscriptionList } from "..";
+import { ImportCommand } from "../models/ImportCommand";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 export = {
-    name: 'unsubscribe',
-    description: 'Un-Subscribe to Game News',
-    args: true,
-    usage: `<GameName>:required`,
-    execute(commandArgs: CommandArgs) {
+    data: new SlashCommandBuilder()
+        .setName('unsubscribe')
+        .setDescription('Un-Subscribe to Game News')
+        .addStringOption(option =>
+            option.setName('gamename')
+                .setDescription('GameName to un-subscribe to')
+                .setRequired(true)),
+    async execute(interaction) {
+        const gameName = interaction.options.getString('gamename');
 
-        const gameName = commandArgs.args.toString().replace(/,/g, ' ').toLowerCase();
-
-        const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+        const app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
 
         if (!app) {
-            return commandArgs.msg.channel.send('Could not find that game');
+            return interaction.reply('Could not find that game');
         }
 
         try {
@@ -46,14 +49,13 @@ export = {
                             }
                         });
                     });
-                    commandArgs.msg.channel.send('Successfully Unsubscribed');
+                    interaction.reply('Successfully Unsubscribed');
                 } else {
-                    return commandArgs.msg.channel.send(`You are not subscribed to ${gameName}`);
+                    return interaction.reply(`You are not subscribed to ${gameName}`);
                 }
             });
         } catch (error) {
             return error;
         }
     }
-
-} as Command;
+} as ImportCommand;

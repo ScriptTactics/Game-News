@@ -1,19 +1,26 @@
-import { Command, CommandArgs } from "../models/Command";
 import * as fs from 'fs';
-import { subscriptionList } from "..";
+import { steamAppList, subscriptionList } from "..";
+import { ImportCommand } from "../models/ImportCommand";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 export = {
-    name: 'subscribe',
-    description: 'Subscribe to Game News',
-    args: true,
-    usage: `<GameName>:required`,
-    async execute(commandArgs: CommandArgs) {
+    data: new SlashCommandBuilder()
+        .setName('subscribe')
+        .setDescription('Subscribe to game news')
+        .addStringOption(option =>
+            option.setName('gamename')
+                .setDescription(`GameName to subscribe to`)
+                .setRequired(true)
+        ),
+    async execute(interaction) {
+        const gameName = interaction.options.getString('gamename');
 
-        const gameName = commandArgs.args.toString().replace(/,/g, ' ').toLowerCase();
 
-        const app = commandArgs.appList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+
+        const app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName.toLowerCase() });
+
         if (!app) {
-            return commandArgs.msg.channel.send('Could not find that game');
+            return interaction.reply('Could not find that game');
         }
 
         try {
@@ -27,7 +34,7 @@ export = {
                 const found = data.toString().split('\n').find(value => { return value === app.appid.toString() });
                 if (found) {
                     duplicate = true;
-                    return commandArgs.msg.channel.send('You are already subscribed to that');
+                    return interaction.reply('You are already subscribed to that');
 
                 }
 
@@ -39,7 +46,7 @@ export = {
                     file.on('error', (err) => { console.error(err); });
                     file.write(app.appid.toString() + '\n');
                     file.end();
-                    commandArgs.msg.channel.send('Successfully Subscribed');
+                    interaction.reply('Successfully Subscribed');
                 }
             });
 
@@ -47,5 +54,4 @@ export = {
             return error;
         }
     }
-
-} as Command;
+} as ImportCommand;

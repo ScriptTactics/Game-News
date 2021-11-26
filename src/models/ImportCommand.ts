@@ -1,6 +1,6 @@
-import { Command } from "./Command";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 export interface ImportCommand {
-    name: string;
-    command: Command;
+    data: SlashCommandBuilder;
+    execute(): Promise<void>;
 }

@@ -20,7 +20,7 @@ export const chID = "913147152635658280";
 const guildID = '732772163471540335';
 const clientID = '912373417917943939';
 
-const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
+//const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
 
 
 const commands = new Collection();
@@ -35,16 +35,12 @@ readdir('dist/commands', async (err, allFiles) => {
     }
     for (const file of files) {
 
-        /*        const importedCommand = await import(`./commands/${file}`) as ImportCommand;
-               const name = importedCommand;
-               console.log(name);
-               const cmd = { ...importedCommand };
+        const importedCommand = require(`./commands/${file}`) as ImportCommand;
+        commands.set(importedCommand.data.name, importedCommand);
 
-               commands.set(importedCommand, cmd); */
     }
 });
 
-commands.set(pingCommand.name, pingCommand);
 const r = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
@@ -90,21 +86,13 @@ client.once("shardDisconnect", (event, shardID) => {
 client.on('interactionCreate', async interaction => {
     console.log(interaction);
     if (!interaction.isCommand()) return;
-    const { commandName } = interaction;
-
-    if (commandName === 'ping') {
-        interaction.reply('pong');
-    }
-    const rawData = pingCommand.toJSON();
-    console.log(rawData);
 
 
-    const command = commands.get(interaction.commandName) as any;
-
-    if (!command) return;
+    const cmd = commands.get(interaction.commandName) as any;
+    if (!cmd) return;
 
     try {
-        await command.execute(interaction);
+        await cmd.execute(interaction);
     } catch (error) {
 
     }

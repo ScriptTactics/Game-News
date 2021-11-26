@@ -2,9 +2,16 @@ import { CommandArgs } from "../models/Command";
 import * as fs from 'fs';
 import { subscriptionList } from "..";
 import { ImportCommand } from "../models/ImportCommand";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
-export default {
-    name: 'unsubscribe',
+export = {
+    data: new SlashCommandBuilder()
+        .setName('unsubscribe')
+        .setDescription('Un-Subscribe to Game News'),
+    async execute(interaction) {
+        interaction.reply('Pong!')
+    }
+    /* name: 'unsubscribe',
     command: {
         name: 'unsubscribe',
         description: 'Un-Subscribe to Game News',
@@ -58,5 +65,5 @@ export default {
                 return error;
             }
         }
-    }
+    } */
 } as ImportCommand;

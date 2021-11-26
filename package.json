@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prestart": "rm -rf dist/",
-    "start": "tsc && node --experimental-specifier-resolution=node dist/index.js ",
+    "start": "tsc && node dist/index.js ",
     "watch": "tsc -p tsconfig.json -w",
     "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\""
   },
@@ -13,7 +13,7 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/builders": "^0.8.2",
+    "@discordjs/builders": "^0.7.0",
     "@discordjs/rest": "^0.1.0-canary.0",
     "axios": "^0.24.0",
     "discord-api-types": "^0.24.0",

@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import { Routes } from 'discord-api-types/v9';
 import { REST } from '@discordjs/rest';
 import { ImportCommand } from './models/ImportCommand';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
@@ -18,6 +19,9 @@ export const chID = "913147152635658280";
 
 const guildID = '732772163471540335';
 const clientID = '912373417917943939';
+
+const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
+
 
 const commands = new Collection();
 readdir('dist/commands', async (err, allFiles) => {
@@ -31,16 +35,16 @@ readdir('dist/commands', async (err, allFiles) => {
     }
     for (const file of files) {
 
-        const importedCommand = await import(`./commands/${file}`) as ImportCommand;
-        const name = importedCommand.name;
-        console.log(name);
-        const cmd = {...importedCommand};
+        /*        const importedCommand = await import(`./commands/${file}`) as ImportCommand;
+               const name = importedCommand;
+               console.log(name);
+               const cmd = { ...importedCommand };
 
-        commands.set(name, cmd);
-        console.log(commands);
+               commands.set(importedCommand, cmd); */
     }
 });
 
+commands.set(pingCommand.name, pingCommand);
 const r = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
@@ -84,26 +88,26 @@ client.once("shardDisconnect", (event, shardID) => {
 });
 
 client.on('interactionCreate', async interaction => {
+    console.log(interaction);
     if (!interaction.isCommand()) return;
     const { commandName } = interaction;
-    //  const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
 
     if (commandName === 'ping') {
         interaction.reply('pong');
     }
-    // const rawData = pingCommand.toJSON();
-    //console.log(rawData);
+    const rawData = pingCommand.toJSON();
+    console.log(rawData);
 
-    /*
-    const command = commands.get(interaction.commandName);
 
-    if(!command) return;
+    const command = commands.get(interaction.commandName) as any;
+
+    if (!command) return;
 
     try {
         await command.execute(interaction);
     } catch (error) {
 
-    } */
+    }
 });
 /* client.on('messageCreate', message => {
     if (message.author.bot || !message.content.startsWith(prefix)) {
@@ -152,9 +156,9 @@ cron.schedule('0 */1 * * *', async () => {
                         const resp = data.data as News;
                         sendGameNews(resp, channel);
                     } else {
-                    console.log(data.status);
-                }
-            });
+                        console.log(data.status);
+                    }
+                });
             }
         });
         rl.close(() => {

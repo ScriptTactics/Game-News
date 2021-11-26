@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { subscriptionList } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 
-export const subscribe: ImportCommand = {
+export default {
     name: 'subscribe',
     command: {
         name: 'subscribe',
@@ -51,7 +51,4 @@ export const subscribe: ImportCommand = {
             }
         }
     }
-};
-
-console.log(`Subscribe: \n`);
-console.log(subscribe)
+} as ImportCommand;

@@ -3,66 +3,32 @@ import * as env from 'dotenv';
 import axios from 'axios';
 import cron from 'node-cron';
 import { News } from './models/steam-news/steam-news-response/steamNewsModelResponse';
-import { readdir } from 'fs';
-import { Command } from './models/Command';
 import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
-import { Routes } from 'discord-api-types/v9';
-import { REST } from '@discordjs/rest';
 import { ImportCommand } from './models/ImportCommand';
-import { SlashCommandBuilder } from '@discordjs/builders';
+import deployCommand from './deploy-command';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 export const MAXLENGTH = 1;
-export const chID = "913147152635658280";
-
-const guildID = '732772163471540335';
-const clientID = '912373417917943939';
-
-//const pingCommand = new SlashCommandBuilder().setName('ping').setDescription('Check if this interaction is responsive');
+export const chID = process.env.CHID;
 
 
-const commands = new Collection();
-readdir('dist/commands', async (err, allFiles) => {
-    if (err) {
-        console.error(`Unable to load commands: ${err}`);
-    }
-    let files = allFiles.filter(f => f.split('.').pop() === ('js'));
-    if (files.length <= 0) {
-        console.log(`No commands found!`);
-        return;
-    }
-    for (const file of files) {
+deployCommand.deploy();
 
-        const importedCommand = require(`./commands/${file}`) as ImportCommand;
-        commands.set(importedCommand.data.name, importedCommand);
+const commands = new Collection<string, ImportCommand>();
+const files = fs.readdirSync('dist/commands').filter(file => file.endsWith('.js'));
+for (const file of files) {
+    const command = require(`./commands/${file}`) as ImportCommand;
+    commands.set(command.data.name, command);
 
-    }
-});
+}
 
-const r = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
-
-(async () => {
-    try {
-        console.log('Started refreshing application (/) commands.');
-
-        await r.put(
-            Routes.applicationGuildCommands(clientID, guildID),
-            { body: commands },
-        );
-
-        console.log('Successfully reloaded application (/) commands.');
-    } catch (error) {
-        console.error(error);
-    }
-})();
 
 let messageList: { [gameId: string]: string } = {};
 let currentDate = new Date();
-export const prefix = '!';
 export const subscriptionList = 'subscriptionList.txt';
-let steamAppList: SteamApps;
+export let steamAppList: SteamApps;
 
 client.once('ready', async () => {
     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
@@ -84,44 +50,16 @@ client.once("shardDisconnect", (event, shardID) => {
 });
 
 client.on('interactionCreate', async interaction => {
-    console.log(interaction);
     if (!interaction.isCommand()) return;
 
-
-    const cmd = commands.get(interaction.commandName) as any;
+    const cmd = commands.get(interaction.commandName);
     if (!cmd) return;
-
     try {
         await cmd.execute(interaction);
     } catch (error) {
-
+        console.error(error);
     }
 });
-/* client.on('messageCreate', message => {
-    if (message.author.bot || !message.content.startsWith(prefix)) {
-        return;
-    }
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    if (args.length < 1) {
-        return;
-    }
-    const command = args.shift()!.toLowerCase();
-    const commandFile = commands.get(command) as Command;
-    if (!commandFile) {
-        return;
-    }
-    if (commands.size < 1) {
-        return;
-    }
-
-    commandFile.execute({
-        msg: message,
-        args: args,
-        commands: commands,
-        appList: steamAppList
-    });
-
-}); */
 
 cron.schedule('0 */1 * * *', async () => {
 

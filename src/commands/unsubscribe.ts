@@ -14,7 +14,8 @@ export = {
     async execute(interaction) {
         const gameName = interaction.options.getString('gamename');
 
-        const app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName });
+        const app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName.toLowerCase() });
+
 
         if (!app) {
             return interaction.reply('Could not find that game');
@@ -30,11 +31,12 @@ export = {
             let fileData: string[] = [];
 
             rl.on('data', (data) => {
-                found = data.toString().split('\n').find(x => { return x === app.appid.toString() });
+
+                found = data.toString().split('\n').find(x => { return parseInt(x) === app.appid });
+                console.log(found);
                 data.toString().split('\n').forEach(id => {
                     if (app.appid.toString() !== id) {
                         fileData.push(id);
-
                     }
                 });
             });

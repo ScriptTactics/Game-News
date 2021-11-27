@@ -26,7 +26,6 @@ for (const file of files) {
 
 
 let messageList: { [gameId: string]: string } = {};
-let currentDate = new Date();
 export const subscriptionList = 'subscriptionList.txt';
 export let steamAppList: SteamApps;
 
@@ -64,6 +63,7 @@ client.on('interactionCreate', async interaction => {
 cron.schedule('0 */1 * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
+    let currentDate = new Date();
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     console.log(`Making request at: ${time}`);
 

@@ -61,7 +61,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-cron.schedule('0 */1 * * *', async () => {
+cron.schedule('*/20 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();

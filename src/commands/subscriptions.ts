@@ -21,7 +21,7 @@ export = {
             let subscriptions: App[] = [];
             rl.on('error', (err) => { console.error(err); });
             rl.on('data', (data) => {
-                data.toString().split('\n').forEach(id => {
+                data.toString().split(',').forEach(id => {
                     const match = apps.find(x => { return x.appid.toString() === id });
                     subscriptions.push(match);
                 });

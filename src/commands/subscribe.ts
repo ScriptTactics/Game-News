@@ -31,7 +31,7 @@ export = {
             let duplicate = false;
             rl.on('error', (err) => { console.error(err); });
             rl.on('data', (data) => {
-                const found = data.toString().split('\n').find(value => { return value === app.appid.toString() });
+                const found = data.toString().split(',').find(value => { return value === app.appid.toString() });
                 if (found) {
                     duplicate = true;
                     return interaction.reply('You are already subscribed to that');
@@ -44,7 +44,7 @@ export = {
                 if (!duplicate) {
                     const file = fs.createWriteStream(subscriptionList, { flags: 'a+' });
                     file.on('error', (err) => { console.error(err); });
-                    file.write(app.appid.toString() + '\n');
+                    file.write(app.appid.toString() + ',');
                     file.end();
                     interaction.reply('Successfully Subscribed');
                 }

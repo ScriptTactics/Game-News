@@ -32,32 +32,29 @@ export = {
 
             rl.on('data', (data) => {
 
-                found = data.toString().split('\n').find(x => { return parseInt(x) === app.appid });
-                console.log(found);
-                data.toString().split('\n').forEach(id => {
+                found = data.toString().split(',').find(x => { return parseInt(x) === app.appid });
+                data.toString().split(',').forEach(id => {
+                    console.log(id);
                     if (app.appid.toString() !== id) {
                         fileData.push(id);
                     }
                 });
             });
 
-
             rl.on('end', () => {
-                if (found !== '') {
-                    fileData.forEach(x => {
-                        fs.writeFile(subscriptionList, x, null, (err) => {
-                            if (err) {
-                                console.error(err);
-                            }
-                        });
-                    });
-                    interaction.reply('Successfully Unsubscribed');
+                console.log(fileData);
+                if (found === undefined) {
+                    interaction.reply(`You are not subscribed to ${gameName}`);
                 } else {
-                    return interaction.reply(`You are not subscribed to ${gameName}`);
+                    fs.writeFileSync(subscriptionList, fileData.toString());
+                    interaction.reply('Successfully Unsubscribed');
+
                 }
-            });
+            })
+
         } catch (error) {
             return error;
         }
+
     }
 } as ImportCommand;

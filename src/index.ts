@@ -73,7 +73,7 @@ cron.schedule('0 */1 * * *', async () => {
     });
     rl.on('error', (err) => { console.error(err); });
     rl.on('data', async (line) => {
-        line.toString().split('\n').forEach(i => {
+        line.toString().split(',').forEach(i => {
             if (i !== '') {
                 const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${i}&count=1&maxlength=${MAXLENGTH}&format=json`;
                 console.log(url);

@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { steamAppList, subscriptionList } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { App } from '../models/steam-apps/GetAppListResponse';
 
 export = {
     data: new SlashCommandBuilder()
@@ -10,12 +11,23 @@ export = {
         .addStringOption(option =>
             option.setName('gamename')
                 .setDescription('GameName to un-subscribe to')
-                .setRequired(true)),
+                .setRequired(false))
+        .addNumberOption(option =>
+            option.setName('gameid')
+                .setDescription('Game ID to un-subscribe to')
+                .setRequired(false)),
     async execute(interaction) {
         const gameName = interaction.options.getString('gamename');
+        const gameId = interaction.options.getNumber('gameid');
 
-        const app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName.toLowerCase() });
 
+        let app: App;
+        if (gameName) {
+            app = steamAppList.applist.apps.find(x => { return x.name.toLocaleLowerCase() === gameName.toLowerCase() });
+        }
+        if (gameId) {
+            app = steamAppList.applist.apps.find(x => { return x.appid === gameId });
+        }
 
         if (!app) {
             return interaction.reply('Could not find that game');

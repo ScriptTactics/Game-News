@@ -7,6 +7,7 @@ import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
 import { ImportCommand } from './models/ImportCommand';
 import deployCommand from './deploy-command';
+import { MessageList, Msg } from './models/Messages';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
@@ -25,8 +26,8 @@ for (const file of files) {
 }
 
 
-let messageList: { [gameId: string]: string } = {};
 export const subscriptionList = 'subscriptionList.txt';
+const messages = 'messageHistory.json';
 export let steamAppList: SteamApps;
 
 client.once('ready', async () => {
@@ -60,7 +61,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-cron.schedule('*/20 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let currentDate = new Date();
@@ -97,23 +98,48 @@ cron.schedule('*/20 * * * *', async () => {
 
 
 function sendGameNews(response: News, channel: TextChannel) {
+    const message = {
+        gameId: response.appnews.appid,
+        time: response.appnews.newsitems[0].date,
+        url: response.appnews.newsitems[0].url
+    } as Msg;
+
     if (!response) {
         return;
     }
     if (response.appnews.newsitems[0].feedlabel !== 'Community Announcements') return;
 
-    const message = response.appnews.newsitems[0].url;
+    fs.readFile(messages, 'utf8', (err, data) => {
+        if (err) {
+            console.error(`${err}: Unable to parse JSON`);
+        } else {
+            let msgList: MessageList = {
+                messages: []
+            };
+            console.log(`Data Length: ${data.length} \n`);
+            console.log(`Message Game Id: ${message.gameId}`)
+            if (data.length > 0) {
+                let msg = JSON.parse(data) as MessageList;
+               const found =  msg.messages.find(x => x.url === message.url);
+                if (found) {
+                    return;
+                } else {
+                    msg.messages.push(message);
+                    fs.writeFile(messages, JSON.stringify(msg, null, 4), (err) => {
+                        if (err) {
+                            console.error(err);
+                        }
+                    });
+                    channel.send(message.url);
+                }
+            } else {
+                msgList.messages.push(message);
+                fs.writeFile(messages, JSON.stringify(msgList, null, 4), (err) => { if (err) { console.error(err); } });
+                channel.send(message.url);
+            }
+        }
+    });
 
-    if ((messageList[response.appnews.appid] === null)) {
-        messageList[response.appnews.appid] = message;
-        channel.send(response.appnews.newsitems[0].url);
-        return;
-    }
-
-    if (messageList[response.appnews.appid] !== message) {
-        messageList[response.appnews.appid] = message;
-        channel.send(message);
-    }
 }
 
 

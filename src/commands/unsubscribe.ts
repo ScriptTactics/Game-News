@@ -1,8 +1,9 @@
 import * as fs from 'fs';
-import { steamAppList, subscriptionList } from "..";
+import { steamAppList, subscriptionList, subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { App } from '../models/steam-apps/GetAppListResponse';
+import { Game, Subscriptions } from '../models/Subscriptions';
 
 export = {
     data: new SlashCommandBuilder()
@@ -33,36 +34,44 @@ export = {
             return interaction.reply('Could not find that game');
         }
 
+        const game = {
+            gameID: app.appid,
+            gameName: app.name
+        } as Game;
+
         try {
-            const rl = fs.createReadStream(subscriptionList, {
-                flags: 'a+',
-                encoding: 'utf8'
-            });
-            let found: string | undefined;
-            rl.on('error', (err) => { throw err; });
-            let fileData: string[] = [];
 
-            rl.on('data', (data) => {
-
-                found = data.toString().split(',').find(x => { return parseInt(x) === app.appid });
-                data.toString().split(',').forEach(id => {
-                    console.log(id);
-                    if (app.appid.toString() !== id) {
-                        fileData.push(id);
-                    }
-                });
-            });
-
-            rl.on('end', () => {
-                console.log(fileData);
-                if (found === undefined) {
-                    interaction.reply(`You are not subscribed to ${gameName}`);
+            fs.readFile(subscriptionListFile, 'utf8', (err, data) => {
+                if (err) {
+                    console.error(`${err} Unable to parse JSON`);
                 } else {
-                    fs.writeFileSync(subscriptionList, fileData.toString());
-                    interaction.reply('Successfully Unsubscribed');
+                    let subscriptionList: Subscriptions = {
+                        gameList: []
+                    };
 
+                    if (data.length > 0) {
+                        let subscriptions = JSON.parse(data) as Subscriptions;
+
+                        const found = subscriptionList.gameList.find(x => x.gameID === app.appid);
+
+                        if (found) {
+                            return interaction.reply('You are not subscribed to that');
+                        } else {
+                            const filteredList = subscriptions.gameList.filter(x => x.gameID !== app.appid);
+                            subscriptionList.gameList = filteredList;
+                            fs.writeFile(subscriptionListFile, JSON.stringify(subscriptionList, null, 4), (err) => {
+                                if (err) {
+                                    console.error(err);
+                                }
+                            });
+                            return interaction.reply('Successfully Unsubscribed');
+                        }
+
+                    } else {
+                        return interaction.reply('You are not subscribed to anything');
+                    }
                 }
-            })
+            });
 
         } catch (error) {
             return error;

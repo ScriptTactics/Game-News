@@ -106,7 +106,7 @@ function sendGameNews(response: News, channel: TextChannel) {
 
     if ((messageList[response.appnews.appid] === null)) {
         messageList[response.appnews.appid] = message;
-        channel.send(response.appnews.newsitems[0].url);
+        channel.send(message);
         return;
     }
 

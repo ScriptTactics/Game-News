@@ -63,7 +63,7 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/20 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let currentDate = new Date();
@@ -80,12 +80,12 @@ cron.schedule('*/2 * * * *', async () => {
             if (subscriptions.gameList.length > 0) {
                 for (const game of subscriptions.gameList) {
                     const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${game.gameID}&count=1&maxlength=${MAXLENGTH}&format=json`;
-                    axios.get(url).then((data) => {
-                        if (data.status === 200) {
-                            const resp = data.data as News;
+                    axios.get(url).then((r) => {
+                        if (r.status === 200) {
+                            const resp = r.data as News;
                             sendGameNews(resp, channel);
                         } else {
-                            console.log(data.status);
+                            console.log(r.status);
                         }
                     });
 
@@ -123,16 +123,16 @@ function sendGameNews(response: News, channel: TextChannel) {
                     return;
                 } else {
                     msg.messages.push(message);
-                    fs.writeFile(messages, JSON.stringify(msg, null, 4), (err) => {
-                        if (err) {
-                            console.error(err);
+                    fs.writeFile(messages, JSON.stringify(msg, null, 4), (error) => {
+                        if (error) {
+                            console.error(error);
                         }
                     });
                     channel.send(message.url);
                 }
             } else {
                 msgList.messages.push(message);
-                fs.writeFile(messages, JSON.stringify(msgList, null, 4), (err) => { if (err) { console.error(err); } });
+                fs.writeFile(messages, JSON.stringify(msgList, null, 4), (er) => { if (er) { console.error(er); } });
                 channel.send(message.url);
             }
         }

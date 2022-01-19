@@ -1,8 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { steamAppList, subscriptionList, subscriptionListFile } from "..";
+import { subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import * as fs from "fs";
-import { App } from "../models/steam-apps/GetAppListResponse";
 import { MessageEmbed } from "discord.js";
 import { Subscriptions } from "../models/Subscriptions";
 

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { steamAppList, subscriptionList, subscriptionListFile } from "..";
+import { steamAppList, subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { App } from '../models/steam-apps/GetAppListResponse';

@@ -27,7 +27,6 @@ for (const file of files) {
 }
 
 
-export const subscriptionList = 'subscriptionList.txt';
 export const subscriptionListFile = 'subscriptionList.json';
 const messages = 'messageHistory.json';
 export let steamAppList: SteamApps;

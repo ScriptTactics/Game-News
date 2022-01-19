@@ -7,6 +7,8 @@ import { SteamApps } from './models/steam-apps/GetAppListResponse';
 import * as fs from 'fs';
 import { ImportCommand } from './models/ImportCommand';
 import deployCommand from './deploy-command';
+import { MessageList, Msg } from './models/Messages';
+import { Subscriptions } from './models/Subscriptions';
 
 env.config();
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
@@ -27,6 +29,8 @@ for (const file of files) {
 
 let messageList: { [gameId: string]: string } = {};
 export const subscriptionList = 'subscriptionList.txt';
+export const subscriptionListFile = 'subscriptionList.json';
+const messages = 'messageHistory.json';
 export let steamAppList: SteamApps;
 
 client.once('ready', async () => {
@@ -60,39 +64,37 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-cron.schedule('*/20 * * * *', async () => {
+cron.schedule('*/2 * * * *', async () => {
 
     const channel = await client.channels.fetch(chID) as TextChannel;
     let currentDate = new Date();
     let time = currentDate.getHours() + ":" + currentDate.getMinutes();
     console.log(`Making request at: ${time}`);
 
-    const rl = fs.createReadStream(subscriptionList, {
-        flags: 'a+',
-        encoding: 'utf8'
-    });
-    rl.on('error', (err) => { console.error(err); });
-    rl.on('data', async (line) => {
-        line.toString().split(',').forEach(i => {
-            if (i !== '') {
-                const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${i}&count=1&maxlength=${MAXLENGTH}&format=json`;
-                console.log(url);
-                axios.get(url).then((data) => {
-                    if (data.status === 200) {
-                        const resp = data.data as News;
-                        sendGameNews(resp, channel);
-                    } else {
-                        console.log(data.status);
-                    }
-                });
+
+    fs.readFile(subscriptionListFile, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+        }
+        if (data.length > 0) {
+            let subscriptions = JSON.parse(data) as Subscriptions;
+            if (subscriptions.gameList.length > 0) {
+                for (const game of subscriptions.gameList) {
+                    const url = `https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=${game.gameID}&count=1&maxlength=${MAXLENGTH}&format=json`;
+                    axios.get(url).then((data) => {
+                        if (data.status === 200) {
+                            const resp = data.data as News;
+                            sendGameNews(resp, channel);
+                        } else {
+                            console.log(data.status);
+                        }
+                    });
+
+                }
             }
-        });
-        rl.close(() => {
-            console.log('Closed stream');
-        })
+        }
 
     });
-
 });
 
 

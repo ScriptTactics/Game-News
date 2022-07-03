@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, TextChannel } from 'discord.js';
+import { Client, Collection, TextChannel } from 'discord.js';
 import * as env from 'dotenv';
 import axios from 'axios';
 import cron from 'node-cron';
@@ -11,8 +11,9 @@ import { MessageList, Msg } from './models/Messages';
 import { Subscriptions } from './models/Subscriptions';
 
 env.config();
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-export const MAXLENGTH = 1;
+const client = new Client({
+    intents: [],
+}); export const MAXLENGTH = 1;
 export const chID = process.env.CHID;
 
 
@@ -51,7 +52,7 @@ client.once("shardDisconnect", (event, shardID) => {
 });
 
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
+    if (!interaction.isChatInputCommand()) return;
 
     const cmd = commands.get(interaction.commandName);
     if (!cmd) return;

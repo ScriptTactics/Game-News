@@ -1,8 +1,7 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { EmbedBuilder, RGBTuple, SlashCommandBuilder } from "@discordjs/builders";
 import { subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import * as fs from "fs";
-import { MessageEmbed } from "discord.js";
 import { Subscriptions } from "../models/Subscriptions";
 
 export = {
@@ -20,12 +19,12 @@ export = {
                         let list = JSON.parse(data) as Subscriptions;
 
                         if (list.gameList.length > 0) {
-                            const embed = new MessageEmbed();
+                            const embed = new EmbedBuilder();
                             embed.setTitle("Subscriptions");
                             embed.setDescription(
                                 "You are currently subscribed to the following: "
                             );
-                            embed.setColor("#006775");
+                            embed.setColor({ '0': 0, '1': 103, '2': 117 } as RGBTuple);
 
                             for (const app of list.gameList) {
                                 if (app !== undefined) {

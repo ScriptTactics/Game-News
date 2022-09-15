@@ -16,7 +16,7 @@
     "@discordjs/rest": "^0.6.0",
     "@types/jsdom": "^16.2.15",
     "axios": "^0.27.2",
-    "discord-api-types": "^0.37.3",
+    "discord-api-types": "^0.37.5",
     "discord.js": "^14.0.2",
     "dotenv": "^8.6.0",
     "jsdom": "^19.0.0",

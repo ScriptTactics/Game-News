@@ -53,6 +53,10 @@ Once you added the bot to your server and you setup the appropriate tokens and I
  If this works you should see your bot come online in your discord server.
 
 
+you may also need to create 2 .json files in the project root directory
+1. `subscriptionList.json`
+2. `messageHistory.json`
+
 ## Commands
 
 This bot has 3 main commands

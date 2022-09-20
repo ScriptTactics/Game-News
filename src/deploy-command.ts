@@ -1,5 +1,4 @@
-import { Routes } from 'discord-api-types/v9';
-import { REST } from '@discordjs/rest';
+import { REST, Routes } from 'discord.js';
 import * as fs from 'fs';
 import { DeployCommands } from './models/DeployCommand';
 export = {

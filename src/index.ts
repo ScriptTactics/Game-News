@@ -116,28 +116,32 @@ function sendGameNews(response: News, channel: TextChannel) {
             let msgList: MessageList = {
                 messages: []
             };
-            if (data.length > 0) {
-                let msg = JSON.parse(data) as MessageList;
-                const found = msg.messages.find(x => x.url === message.url);
-                if (found) {
-                    return;
-                } else {
-                    msg.messages.push(message);
-                    fs.writeFile(messages, JSON.stringify(msg, null, 4), (error) => {
-                        if (error) {
-                            console.error(error);
-                        }
-                    });
-                    channel.send(message.url);
-                }
-            } else {
-                msgList.messages.push(message);
-                fs.writeFile(messages, JSON.stringify(msgList, null, 4), (er) => { if (er) { console.error(er); } });
-                channel.send(message.url);
-            }
+            processMsg(msgList, data, message, channel)
+
         }
     });
+}
 
+function processMsg(msgList: MessageList, data: string, message: Msg, channel: TextChannel) {
+    if (data.length > 0) {
+        let msg = JSON.parse(data) as MessageList;
+        const found = msg.messages.find(x => x.url === message.url);
+        if (found) {
+            return;
+        } else {
+            msg.messages.push(message);
+            fs.writeFile(messages, JSON.stringify(msg, null, 4), (error) => {
+                if (error) {
+                    console.error(error);
+                }
+            });
+            channel.send(message.url);
+        }
+    } else {
+        msgList.messages.push(message);
+        fs.writeFile(messages, JSON.stringify(msgList, null, 4), (er) => { if (er) { console.error(er); } });
+        channel.send(message.url);
+    }
 }
 
 

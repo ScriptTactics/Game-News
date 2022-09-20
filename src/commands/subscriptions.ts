@@ -1,8 +1,8 @@
-import { EmbedBuilder, RGBTuple, SlashCommandBuilder } from "@discordjs/builders";
 import { subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import * as fs from "fs";
 import { Subscriptions } from "../models/Subscriptions";
+import { ColorResolvable, EmbedBuilder, RGBTuple, SlashCommandBuilder } from "discord.js";
 
 export = {
     data: new SlashCommandBuilder()
@@ -24,7 +24,8 @@ export = {
                             embed.setDescription(
                                 "You are currently subscribed to the following: "
                             );
-                            embed.setColor({ '0': 0, '1': 103, '2': 117 } as RGBTuple);
+                            embed.setColor([0,103,117]);
+                            //{ '0': 0, '1': 103, '2': 117 } as RGBTuple
 
                             for (const app of list.gameList) {
                                 if (app !== undefined) {

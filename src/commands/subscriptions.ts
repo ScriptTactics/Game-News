@@ -2,7 +2,7 @@ import { subscriptionListFile } from "..";
 import { ImportCommand } from "../models/ImportCommand";
 import * as fs from "fs";
 import { Subscriptions } from "../models/Subscriptions";
-import { ColorResolvable, EmbedBuilder, RGBTuple, SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export = {
     data: new SlashCommandBuilder()

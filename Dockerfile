@@ -1,15 +1,15 @@
 FROM node:latest
 
 # Create directory
-RUN mkdir =p /usr/src/game-news
-WORKDIR /usr/src/game-news
+WORKDIR /usr/game-news
 
 # Copy and install bot
-COPY package.json /usr/src/game-news
-RUN npm install
+COPY package.json .
+RUN npm install && npm install typescript -g
 
 # Copy Bot
-COPY . /usr/src/game-news
+COPY . .
+RUN tsc
 
 # Start
-CMD ["node", "/dist/index.js"]
+CMD ["node", "./dist/index.js"]

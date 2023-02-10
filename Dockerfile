@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine
 
 # Create directory
 WORKDIR /usr/game-news

@@ -11,9 +11,7 @@ import { MessageList, Msg } from './models/Messages';
 import { Subscriptions } from './models/Subscriptions';
 
 env.config();
-const client = new Client({
-    intents: [],
-}); export const MAXLENGTH = 1;
+export const MAXLENGTH = 1;
 export const chID = process.env.CHID;
 
 
@@ -23,10 +21,14 @@ const commands = new Collection<string, ImportCommand>();
 const files = fs.readdirSync('dist/commands').filter(file => file.endsWith('.js'));
 for (const file of files) {
     const command = require(`./commands/${file}`) as ImportCommand;
+    console.log(`setting command: ${command.data.name}`);
     commands.set(command.data.name, command);
 
 }
 
+const client = new Client({
+    intents: [],
+});
 
 export const subscriptionListFile = 'subscriptionList.json';
 const messages = 'messageHistory.json';
@@ -36,24 +38,15 @@ client.once('ready', async () => {
     const appList = await axios.get('http://api.steampowered.com/ISteamApps/GetAppList/v0002/');
 
     if (appList.status === 200) {
-        console.log(`Retrieved SteamApp response`);
         steamAppList = appList.data as SteamApps;
+        console.log(`Retrieved SteamApp response`);
     } else {
         console.error(`${appList.status}: Unable to retrieve response \n ${appList.data}`);
     }
 });
 
-client.once("shardReconnecting", id => {
-    console.log(`Shard with ID ${id} reconnected`);
-});
-
-client.once("shardDisconnect", (event, shardID) => {
-    console.log(`Disconnected from event ${event} with ID ${shardID}`);
-});
-
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
-
     const cmd = commands.get(interaction.commandName);
     if (!cmd) return;
     try {

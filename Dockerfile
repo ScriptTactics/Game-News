@@ -6,7 +6,7 @@ WORKDIR /usr/game-news
 # Copy and install bot
 COPY package.json .
 RUN touch subscriptionList.json
-RUN touch messageHistroy.json
+RUN touch messageHistory.json
 RUN npm install && npm install typescript -g
 
 # Copy Bot
